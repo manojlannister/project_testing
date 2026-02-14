@@ -1,0 +1,139 @@
+/* Custom properties for easy branding */
+:root {
+    --bg-dark: #050505;
+    --accent-blue: #3b82f6;
+    --accent-emerald: #10b981;
+    --accent-red: #ef4444;
+    --accent-amber: #f59e0b;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Global Reset & Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* Premium Glassmorphism */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Typography Enhancements */
+.tracking-tighter {
+    letter-spacing: -0.05em;
+}
+
+/* Modern Scrollbar for the Console and Tables */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-blue);
+}
+
+/* --- Packet Analysis & Live Progress Bars --- */
+
+/* Animation for the Protocol bars to 'grow' when page loads */
+.progress-fill {
+    transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+}
+
+/* Pulse effect for "Live Recording" indicators */
+.animate-pulse-slow {
+    animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.9); }
+}
+
+/* Cyber-style Console Text */
+.console-text {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    font-family: 'Fira Code', 'Courier New', monospace;
+}
+
+/* Animation for subtle 'Live' elements */
+@keyframes soft-glow {
+    0%, 100% { opacity: 0.5; filter: brightness(1); }
+    50% { opacity: 1; filter: brightness(1.2); }
+}
+
+.animate-glow {
+    animation: soft-glow 3s ease-in-out infinite;
+}
+
+/* Table Hover States */
+tr.hover-row:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+/* Status Tags for Vulnerabilities */
+.status-critical { color: var(--accent-red); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); }
+.status-warning { color: var(--accent-amber); background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); }
+.status-secure { color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+
+/* High-contrast Buttons */
+.btn-primary {
+    background: #ffffff;
+    color: #000000;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    background: var(--accent-blue);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    transform: scale(1.02);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-blue);
+}

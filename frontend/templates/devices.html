@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connected Assets | Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; }
+        .mono { font-family: 'Fira Code', monospace; }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        .dot-pulse {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-[#050505] min-h-screen">
+
+    <nav class="flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <a href="/" class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="text-blue-500 w-6 h-6"></i>
+                <span class="text-lg font-bold tracking-tighter uppercase">Scanner</span>
+            </a>
+        </div>
+        <div class="flex gap-4">
+            <div class="px-3 py-1 bg-white/5 rounded-md border border-white/10 text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 dot-pulse"></div>
+                System Live
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-8 py-12">
+        <div class="flex justify-between items-end mb-10">
+            <div>
+                <h1 class="text-4xl font-bold tracking-tight mb-2">Network Inventory</h1>
+                <p class="text-gray-500">Mapping 192.168.1.0/24 — 6 Devices Discovered</p>
+            </div>
+            <button class="flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-500 hover:text-white transition">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Deep Scan
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4">
+                    <i data-lucide="router" class="text-blue-500/20 w-12 h-12"></i>
+                </div>
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="p-3 bg-blue-500/10 rounded-2xl">
+                        <i data-lucide="hard-drive" class="text-blue-500 w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold">Main Gateway</h3>
+                        <p class="text-xs text-blue-400 font-mono">192.168.1.1</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">MAC Address</span>
+                        <span class="mono text-gray-300">00:1A:2B:3C:4D:5E</span>
+                    </div>
+                    <div class="flex justify-between text-xs border-t border-white/5 pt-3">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">Vendor</span>
+                        <span class="text-gray-300">Cisco Systems</span>
+                    </div>
+                    <div class="flex justify-between text-xs border-t border-white/5 pt-3">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">Status</span>
+                        <span class="text-emerald-500 font-bold uppercase">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden border-blue-500/30">
+                <div class="absolute top-0 right-0 p-4 text-emerald-500/20">
+                    <i data-lucide="laptop" class="w-12 h-12"></i>
+                </div>
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="p-3 bg-emerald-500/10 rounded-2xl">
+                        <i data-lucide="user" class="text-emerald-500 w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold">Admin-Workstation</h3>
+                        <p class="text-xs text-emerald-400 font-mono">192.168.1.105</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">MAC Address</span>
+                        <span class="mono text-gray-300">A1:B2:C3:D4:E5:F6</span>
+                    </div>
+                    <div class="flex justify-between text-xs border-t border-white/5 pt-3">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">OS Detected</span>
+                        <span class="text-gray-300">Linux / Ubuntu</span>
+                    </div>
+                    <div class="flex justify-between text-xs border-t border-white/5 pt-3">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">Trust Level</span>
+                        <span class="text-blue-400 font-bold uppercase">Verified</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 text-amber-500/20">
+                    <i data-lucide="help-circle" class="w-12 h-12"></i>
+                </div>
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="p-3 bg-amber-500/10 rounded-2xl">
+                        <i data-lucide="cpu" class="text-amber-500 w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold">Unknown Device</h3>
+                        <p class="text-xs text-amber-400 font-mono">192.168.1.200</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">MAC Address</span>
+                        <span class="mono text-gray-300">F9:E8:D7:C6:B5:A4</span>
+                    </div>
+                    <div class="flex justify-between text-xs border-t border-white/5 pt-3">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">Vendor</span>
+                        <span class="text-gray-300">Generic IoT</span>
+                    </div>
+                    <div class="flex justify-between text-xs border-t border-white/5 pt-3">
+                        <span class="text-gray-500 uppercase font-bold tracking-widest">Risk</span>
+                        <span class="text-amber-500 font-bold uppercase">Untrusted</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

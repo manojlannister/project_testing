@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit History | Sergent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-[#050505]">
+
+    <nav class="flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <a href="/" class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="text-blue-500 w-6 h-6"></i>
+                <span class="text-lg font-bold tracking-tighter uppercase">Sergent</span>
+            </a>
+        </div>
+        <div class="flex gap-6 items-center">
+            <a href="/scan" class="text-sm text-gray-400 hover:text-white transition">New Scan</a>
+            <a href="/vulnerabilities" class="text-sm text-gray-400 hover:text-white transition">Dashboard</a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-8 py-12">
+        <header class="mb-12">
+            <h1 class="text-4xl font-bold tracking-tight mb-2">Audit History</h1>
+            <p class="text-gray-500 font-mono text-sm uppercase tracking-widest">Archived Network Intelligence</p>
+        </header>
+
+        <div class="glass-card rounded-3xl overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-white/5 border-b border-white/5">
+                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Timestamp</th>
+                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Network (SSID)</th>
+                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Score</th>
+                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Risk Level</th>
+                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Issues Found</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    {% if history %}
+                        {% for scan in history %}
+                        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
+                            <td class="px-8 py-6 text-gray-400 font-mono">{{ scan[1] }}</td>
+                            <td class="px-8 py-6 font-bold text-white">{{ scan[4] }}</td>
+                            <td class="px-8 py-6">
+                                <span class="font-black {% if scan[2] > 80 %} text-emerald-500 {% elif scan[2] > 50 %} text-amber-500 {% else %} text-red-500 {% endif %}">
+                                    {{ scan[2] }}%
+                                </span>
+                            </td>
+                            <td class="px-8 py-6 uppercase text-[10px] font-bold tracking-widest">{{ scan[3] }}</td>
+                            <td class="px-8 py-6 text-gray-500">{{ scan[5] }} Vulnerabilities</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="px-8 py-20 text-center text-gray-500 italic">
+                                <i data-lucide="database" class="w-12 h-12 mx-auto mb-4 opacity-10"></i>
+                                No scan history found. Start your first scan to populate this list.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

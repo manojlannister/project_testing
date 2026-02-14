@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Assessment | Sergent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .status-critical { color: #ef4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .status-warning { color: #f59e0b; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .status-secure { color: #10b981; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .progress-fill { transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-[#050505]">
+
+    <nav class="flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <a href="/" class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="text-blue-500 w-6 h-6"></i>
+                <span class="text-lg font-bold tracking-tighter uppercase">Sergent</span>
+            </a>
+        </div>
+        <div class="flex gap-6 items-center">
+            <a href="/history" class="text-sm text-gray-400 hover:text-white transition flex items-center gap-2">
+                <i data-lucide="history" class="w-4 h-4"></i> History
+            </a>
+            <a href="/scan" class="text-sm text-gray-400 hover:text-white transition">Rescan</a>
+            <a href="/report" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-500 transition">View Full Report</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-8 py-12">
+        <header class="mb-12">
+            <h1 class="text-4xl font-bold tracking-tight mb-2">Vulnerability Matrix</h1>
+            <p class="text-gray-500 font-mono text-sm uppercase tracking-widest">Live Network Intelligence</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="glass-card p-6 rounded-2xl border-b-4 border-blue-500">
+                <p class="text-gray-500 text-[10px] font-bold uppercase mb-1 tracking-widest">Network Health</p>
+                <p class="text-3xl font-black">{{ score.security_score }}%</p>
+            </div>
+            
+            <div class="glass-card p-6 rounded-2xl border-b-4 border-emerald-500">
+                <p class="text-gray-500 text-[10px] font-bold uppercase mb-1 tracking-widest">WiFi Encryption</p>
+                <p class="text-xl font-bold truncate">{{ wifi[0].security_raw if wifi else "WPA2-AES" }}</p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border-b-4 border-amber-500">
+                <p class="text-gray-500 text-[10px] font-bold uppercase mb-1 tracking-widest">Detected Vulnerabilities</p>
+                <p class="text-3xl font-black text-white">{{ ports|length }}</p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border-b-4 border-red-500">
+                <p class="text-gray-500 text-[10px] font-bold uppercase mb-1 tracking-widest">ARP Threats</p>
+                <p class="text-3xl font-black text-white">{{ "ACTIVE" if arp.alerts else "NONE" }}</p>
+            </div>
+        </div>
+
+        <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+            <i data-lucide="layout-grid" class="text-blue-500"></i>
+            Usage Compatibility Scores
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="glass-card p-6 rounded-2xl border-l-4 border-emerald-500">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400 font-bold text-xs uppercase tracking-widest">Banking & Payments</span>
+                    <i data-lucide="credit-card" class="text-emerald-500 w-5 h-5"></i>
+                </div>
+                <p class="text-2xl font-black text-white">{{ usage.payments }}% Safety</p>
+                <div class="w-full bg-white/5 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div class="progress-fill bg-emerald-500 h-full" style="width: {{ usage.payments }}%"></div>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 italic">Based on encryption and MITM risk.</p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border-l-4 border-amber-500">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400 font-bold text-xs uppercase tracking-widest">File Sharing</span>
+                    <i data-lucide="file-up" class="text-amber-500 w-5 h-5"></i>
+                </div>
+                <p class="text-2xl font-black text-white">{{ usage.files }}% Security</p>
+                <div class="w-full bg-white/5 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div class="progress-fill bg-amber-500 h-full" style="width: {{ usage.files }}%"></div>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 italic">Based on protocol security and ports.</p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border-l-4 border-purple-500">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400 font-bold text-xs uppercase tracking-widest">Movies & Streaming</span>
+                    <i data-lucide="tv" class="text-purple-500 w-5 h-5"></i>
+                </div>
+                <p class="text-2xl font-black text-white">{{ usage.movies }}% Stability</p>
+                <div class="w-full bg-white/5 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div class="progress-fill bg-purple-500 h-full" style="width: {{ usage.movies }}%"></div>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 italic">Based on jitter and buffering risk.</p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border-l-4 border-blue-500">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400 font-bold text-xs uppercase tracking-widest">Online Gaming</span>
+                    <i data-lucide="gamepad-2" class="text-blue-500 w-5 h-5"></i>
+                </div>
+                <p class="text-2xl font-black text-white">{{ usage.gaming }}% Performance</p>
+                <div class="w-full bg-white/5 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div class="progress-fill bg-blue-500 h-full" style="width: {{ usage.gaming }}%"></div>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 italic">Based on live ping and latency.</p>
+            </div>
+        </div>
+
+        <section class="mb-12">
+            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="activity" class="text-blue-500"></i>
+                Live Traffic Composition
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {% if packets %}
+                    {% for p in packets %}
+                    <div class="glass-card p-5 rounded-xl border-l-2 border-l-blue-500">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-black text-white uppercase">{{ p.protocol }}</span>
+                            <span class="text-xs text-blue-400 font-mono">{{ p.percentage }}%</span>
+                        </div>
+                        <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                            <div class="progress-fill bg-blue-600 h-full" style="width: {{ p.percentage }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-500 italic text-sm">No packet data captured in this session.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+            <i data-lucide="alert-triangle" class="text-red-500"></i>
+            Detailed Security Audit
+        </h2>
+        <div class="glass-card rounded-3xl overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-white/5 border-b border-white/5">
+                        <th class="px-8 py-4 text-xs font-bold uppercase text-gray-400">Threat / Target</th>
+                        <th class="px-8 py-4 text-xs font-bold uppercase text-gray-400">Severity</th>
+                        <th class="px-8 py-4 text-xs font-bold uppercase text-gray-400">Protocol</th>
+                        <th class="px-8 py-4 text-xs font-bold uppercase text-gray-400">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    {% if wifi %}
+                    <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
+                        <td class="px-8 py-6">
+                            <div class="font-bold text-white">Gateway: {{ wifi[0].ssid }}</div>
+                            <div class="text-gray-500 text-xs">Auth: {{ wifi[0].security_raw }}</div>
+                        </td>
+                        <td class="px-8 py-6">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase 
+                                {% if 'WPA2' in wifi[0].security_level or 'WPA3' in wifi[0].security_level %} status-secure 
+                                {% else %} status-critical {% endif %}">
+                                {{ wifi[0].security_level.split('(')[0] }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-6 text-gray-400">802.11 Wireless</td>
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full {% if 'WPA2' in wifi[0].security_level or 'WPA3' in wifi[0].security_level %} bg-emerald-500 {% else %} bg-red-500 {% endif %}"></div>
+                                <span class="{% if 'WPA2' in wifi[0].security_level or 'WPA3' in wifi[0].security_level %} text-emerald-500 {% else %} text-red-500 {% endif %} font-medium uppercase text-[10px]">
+                                    {{ "Secure" if "WPA2" in wifi[0].security_level or "WPA3" in wifi[0].security_level else "Vulnerable" }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    {% if ports %}
+                        {% for p in ports %}
+                        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
+                            <td class="px-8 py-6">
+                                <div class="font-bold text-white">{{ p.service }}</div>
+                                <div class="text-gray-500 text-xs">Port {{ p.port }} ({{ p.target }})</div>
+                            </td>
+                            <td class="px-8 py-6">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase 
+                                    {% if p.port in [443, 8443] or p.risk_level == 'Secure' %} status-secure 
+                                    {% elif p.risk_level == 'High Risk' %} status-critical 
+                                    {% else %} status-warning {% endif %}">
+                                    {% if p.port in [443, 8443] %} Secure {% else %} {{ p.risk_level }} {% endif %}
+                                </span>
+                            </td>
+                            <td class="px-8 py-6 text-gray-400">{{ p.protocol }}</td>
+                            <td class="px-8 py-6">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full {% if p.port in [443, 8443] or p.risk_level == 'Secure' %} bg-emerald-500 {% else %} bg-red-500 animate-pulse {% endif %}"></div>
+                                    <span class="{% if p.port in [443, 8443] or p.risk_level == 'Secure' %} text-emerald-500 {% else %} text-red-500 {% endif %} font-medium uppercase text-[10px]">
+                                        {{ "Protected" if (p.port in [443, 8443] or p.risk_level == 'Secure') else "Exposed" }}
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

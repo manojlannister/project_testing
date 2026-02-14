@@ -1,0 +1,39 @@
+/* ===================================
+   SCAN PAGE – STABLE & SAFE
+   =================================== */
+
+/* Disable loading overlay completely */
+.loading-screen {
+    display: none !important;
+}
+
+/* NEVER hide content */
+.quick-stats-section,
+.results-section,
+#results,
+#hero-section,
+#footer {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    height: auto !important;
+}
+
+/* Tables */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-table th,
+.results-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e5ea;
+    text-align: left;
+}
+
+/* SVG safety */
+svg {
+    max-width: 100%;
+}
+s

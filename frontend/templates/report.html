@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Audit Report | Sergent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .score-circle {
+            background: conic-gradient(
+                {% if score < 50 %} #ef4444 {% elif score < 85 %} #f59e0b {% else %} #10b981 {% endif %} 
+                0% {{ score }}%, 
+                #1e293b {{ score }}% 100%
+            );
+            border-radius: 50%;
+        }
+        @media print {
+            .no-print { display: none; }
+            body { background: white !important; color: black !important; }
+            .glass-card { border: 1px solid #ddd; background: white; color: black; }
+            .text-gray-400, .text-gray-500, .text-blue-500, .text-emerald-400, .text-purple-500, .text-amber-500 { color: #222 !important; }
+            .bg-blue-500\/5, .bg-emerald-500\/5 { background: #f9f9f9 !important; border: 1px solid #eee !important; }
+        }
+    </style>
+</head>
+<body class="bg-[#050505]">
+
+    <nav class="no-print flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <i data-lucide="shield-check" class="text-blue-500 w-6 h-6"></i>
+            <span class="text-lg font-bold tracking-tighter uppercase">Sergent</span>
+        </div>
+        <button onclick="window.print()" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-xs font-bold transition text-white">
+            <i data-lucide="printer" class="w-4 h-4"></i> Export PDF
+        </button>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-8 py-16">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-8">
+            <div>
+                <h1 class="text-5xl font-bold tracking-tighter mb-4">Security Audit<br>Report</h1>
+                <p class="text-gray-500 font-mono text-sm uppercase tracking-widest">SESSION ID: SRGT-{{ range(1000, 9999) | random }}</p>
+            </div>
+            
+            <div class="relative w-48 h-48 flex items-center justify-center">
+                <div class="score-circle w-full h-full absolute transform -rotate-90"></div>
+                <div class="w-40 h-40 bg-[#050505] rounded-full absolute flex flex-col items-center justify-center">
+                    <span class="text-4xl font-black text-white">{{ score }}</span>
+                    <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Health Score</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="glass-card p-6 rounded-3xl">
+                <h3 class="text-blue-500 font-bold text-xs uppercase mb-2 tracking-widest">Network State</h3>
+                <p class="text-xl font-bold text-white">{{ risk_level }}</p>
+            </div>
+            <div class="glass-card p-6 rounded-3xl">
+                <h3 class="text-emerald-500 font-bold text-xs uppercase mb-2 tracking-widest">WiFi Protocol</h3>
+                <p class="text-xl font-bold text-white">{{ wifi[0].security_raw if wifi else 'WPA2' }}</p>
+            </div>
+            <div class="glass-card p-6 rounded-3xl">
+                <h3 class="text-amber-500 font-bold text-xs uppercase mb-2 tracking-widest">Vulnerabilities</h3>
+                <p class="text-2xl font-bold text-white">{{ open_ports|length }}</p>
+            </div>
+            <div class="glass-card p-6 rounded-3xl">
+                <h3 class="text-emerald-500 font-bold text-xs uppercase mb-2 tracking-widest">Devices</h3>
+                <p class="text-2xl font-bold text-white">{{ devices|length }}</p>
+            </div>
+        </div>
+
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <i data-lucide="layout-grid" class="text-blue-500"></i>
+                Usage Compatibility Matrix
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-emerald-500">
+                    <span class="text-gray-500 font-bold text-[10px] uppercase tracking-widest block mb-4">Banking</span>
+                    <p class="text-2xl font-black text-white">{{ usage.payments }}% Safety</p>
+                    <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
+                        <div class="bg-emerald-500 h-full" style="width: {{ usage.payments }}%"></div>
+                    </div>
+                    <p class="text-[9px] text-gray-500 mt-2 italic">Based on encryption and MITM risk.</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-amber-500">
+                    <span class="text-gray-500 font-bold text-[10px] uppercase tracking-widest block mb-4">File Sharing</span>
+                    <p class="text-2xl font-black text-white">{{ usage.files }}% Secure</p>
+                    <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
+                        <div class="bg-amber-500 h-full" style="width: {{ usage.files }}%"></div>
+                    </div>
+                    <p class="text-[9px] text-gray-500 mt-2 italic">Based on protocol security and ports.</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-purple-500">
+                    <span class="text-gray-500 font-bold text-[10px] uppercase tracking-widest block mb-4">Streaming</span>
+                    <p class="text-2xl font-black text-white">{{ usage.movies }}% Stability</p>
+                    <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
+                        <div class="bg-purple-500 h-full" style="width: {{ usage.movies }}%"></div>
+                    </div>
+                    <p class="text-[9px] text-gray-500 mt-2 italic">Based on jitter and buffering risk.</p>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-blue-500">
+                    <span class="text-gray-500 font-bold text-[10px] uppercase tracking-widest block mb-4">Gaming</span>
+                    <p class="text-2xl font-black text-white">{{ usage.gaming }}% Performance</p>
+                    <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
+                        <div class="bg-blue-500 h-full" style="width: {{ usage.gaming }}%"></div>
+                    </div>
+                    <p class="text-[9px] text-gray-500 mt-2 italic">Based on live ping and latency.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <i data-lucide="activity" class="text-blue-500"></i>
+                Traffic Analysis Summary
+            </h2>
+            <div class="glass-card p-8 rounded-3xl">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    {% if packets %}
+                        {% for p in packets %}
+                        <div>
+                            <span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest block mb-2">{{ p.protocol }}</span>
+                            <div class="flex items-end gap-2">
+                                <span class="text-2xl font-bold text-white">{{ p.percentage }}%</span>
+                                <span class="text-[10px] text-gray-500 mb-1">load</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-gray-500 italic">No traffic metadata captured in this audit.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <i data-lucide="list-checks" class="text-blue-500"></i>
+                Remediation Roadmap
+            </h2>
+            <div class="space-y-4">
+                {% if recommendations %}
+                    {% for rec in recommendations %}
+                    <div class="glass-card p-6 rounded-2xl flex gap-6 items-start border-l-4 
+                        {% if rec.severity == 'Critical' or rec.severity == 'High' %} border-l-red-500 
+                        {% elif rec.severity == 'Medium' %} border-l-amber-500 
+                        {% else %} border-l-blue-500 {% endif %}">
+                        <div class="bg-white/5 p-3 rounded-xl">
+                            <i data-lucide="alert-circle" class="text-blue-400 w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold mb-1 text-white">{{ rec.title if rec.title else rec }}</h4>
+                            <p class="text-gray-400 text-sm">{{ rec.desc if rec.desc else "Action prioritized based on live session heuristics." }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="glass-card p-8 rounded-2xl text-center text-gray-500 italic">
+                        The scan did not trigger any high-risk remediation flags.
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-8 flex items-center gap-3 text-emerald-400">
+                <i data-lucide="shield-check"></i>
+                Expert WiFi Safety Guide
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-card p-8 rounded-3xl border-blue-500/20 bg-blue-500/5">
+                    <h4 class="text-blue-400 font-bold text-sm uppercase mb-6 flex items-center gap-2">
+                        <i data-lucide="wifi"></i> Public WiFi Safety
+                    </h4>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li class="flex gap-3"><i data-lucide="shield" class="w-4 h-4 text-blue-500 mt-0.5"></i> Use a VPN to encrypt your device-to-server tunnel.</li>
+                        <li class="flex gap-3"><i data-lucide="shield" class="w-4 h-4 text-blue-500 mt-0.5"></i> Only enter data on "HTTPS" websites with padlock icons.</li>
+                        <li class="flex gap-3"><i data-lucide="shield" class="w-4 h-4 text-blue-500 mt-0.5"></i> Disable "Auto-Connect" to prevent joining rogue hotspots.</li>
+                        <li class="flex gap-3"><i data-lucide="shield" class="w-4 h-4 text-blue-500 mt-0.5"></i> Activate OS firewalls before connecting to shared APs.</li>
+                    </ul>
+                </div>
+                <div class="glass-card p-8 rounded-3xl border-emerald-500/20 bg-emerald-500/5">
+                    <h4 class="text-emerald-400 font-bold text-sm uppercase mb-6 flex items-center gap-2">
+                        <i data-lucide="home"></i> Home Hardening
+                    </h4>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li class="flex gap-3"><i data-lucide="lock" class="w-4 h-4 text-emerald-500 mt-0.5"></i> Rotate Default Credentials: Change factory admin logins.</li>
+                        <li class="flex gap-3"><i data-lucide="lock" class="w-4 h-4 text-emerald-500 mt-0.5"></i> Disable WPS/UPnP to close legacy exploit entry points.</li>
+                        <li class="flex gap-3"><i data-lucide="lock" class="w-4 h-4 text-emerald-500 mt-0.5"></i> Firmware Management: Regularly update router software.</li>
+                        <li class="flex gap-3"><i data-lucide="lock" class="w-4 h-4 text-emerald-500 mt-0.5"></i> Isolate IoT devices on a separate Guest VLAN/Network.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center pt-16 border-t border-white/5">
+            <p class="text-gray-600 text-sm italic">"Security is not a product, but a process." — Bruce Schneier</p>
+            <div class="mt-8 opacity-20 flex justify-center grayscale">
+                <i data-lucide="shield-check" class="w-12 h-12"></i>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
