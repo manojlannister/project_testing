@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Suite | Sergent.CORE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #3b82f6;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #000000; 
+            color: #ffffff; 
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(147, 51, 234, 0.05) 0%, transparent 40%);
+        }
+
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Premium Glass Card */
+        .tool-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            aspect-ratio: 1.4 / 1;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .tool-card:hover::before { opacity: 1; }
+
+        .logo-box {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+        }
+
+        .logo-box i, .logo-box img { width: 100%; height: auto; }
+
+        .tag {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 100px;
+            width: fit-content;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <nav class="max-w-7xl mx-auto mb-20 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
+                <i data-lucide="shield" class="text-white w-6 h-6"></i>
+            </div>
+            <span class="text-xl font-extrabold tracking-tighter">Sergent<span class="text-blue-500">.</span>CORE</span>
+        </div>
+        <div class="flex gap-6 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+            <a href="/" class="hover:text-white transition">Dashboard</a>
+            <a href="/scan" class="hover:text-white transition">Audit</a>
+            <a href="/tools" class="text-white border-b-2 border-blue-500 pb-1">Technical Suite</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto">
+        <div class="mb-16">
+            <h1 class="text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
+                The Tech Stack
+            </h1>
+            <p class="text-gray-400 font-medium max-w-2xl text-lg">
+                Integrating industry-standard network protocols and low-level libraries into a unified security audit kernel.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="tool-card">
+                <div class="tag text-blue-400">Core Language</div>
+                <div class="logo-box"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg"></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">Python 3.12</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">Asynchronous heavy-lifting of packet analysis and RESTful communications for maximum security throughput.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="tag text-emerald-400">Web Framework</div>
+                <div class="logo-box"><i data-lucide="layers" class="text-emerald-500"></i></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">Flask 3.0</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">WSGI framework building our high-performance REST API, ensuring minimal latency between backend and UI.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="tag text-purple-400">Data Persistence</div>
+                <div class="logo-box"><i data-lucide="database" class="text-purple-500"></i></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">SQLite3</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">ACID-compliant relational engine integrated for local threat logging and session history without overhead.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="tag text-red-400">Reconnaissance</div>
+                <div class="logo-box"><i data-lucide="radar" class="text-red-500"></i></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">NMAP Engine</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">Automates stealth service discovery and TCP/UDP stack interrogation through low-level port auditing.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="tag text-cyan-400">Packet Logic</div>
+                <div class="logo-box"><i data-lucide="activity" class="text-cyan-500"></i></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">Scapy Core</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">Captures raw L2/L3 frames for deep inspection, enabling ARP spoofing detection and live IDS sniffing.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="tag text-orange-400">AI / Simulation</div>
+                <div class="logo-box"><i data-lucide="binary" class="text-orange-500"></i></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">Kaggle Dataset</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">Utilizes 'CyberFedDefender' attack signatures to demonstrate detection logic for DDoS and Infiltration.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="tag text-indigo-400">Intelligence Link</div>
+                <div class="logo-box"><i data-lucide="cloud-lightning" class="text-indigo-500"></i></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">RESTful & JSON</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">Dynamic bridge fetching the latest threat definitions directly from global NIST NVD repositories in real-time.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="tag text-pink-400">Frontend Stack</div>
+                <div class="logo-box"><i data-lucide="code-2" class="text-pink-500"></i></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">HTML5 / JS / CSS</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">Reactive Tailwind UI using main.js for non-blocking 9-step scan updates and progress synchronization.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="tag text-yellow-400">Audit Output</div>
+                <div class="logo-box"><i data-lucide="file-text" class="text-yellow-500"></i></div>
+                <h3 class="text-2xl font-bold mb-4 font-mono">PDF Logic</h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed">Integrated PDFKit generation to compile technical findings into professional, downloadable security audit reports.</p>
+            </div>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-[32px] p-10">
+            <h4 class="text-xs font-black uppercase tracking-[0.4em] text-gray-500 mb-8">Integrated Libraries & System Components</h4>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="space-y-3">
+                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Data Analysis</p>
+                    <ul class="text-[11px] font-mono text-gray-400 space-y-2">
+                        <li>• Pandas (CSV Processor)</li>
+                        <li>• NumPy (Heuristics)</li>
+                    </ul>
+                </div>
+                <div class="space-y-3">
+                    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Communication</p>
+                    <ul class="text-[11px] font-mono text-gray-400 space-y-2">
+                        <li>• SMTPLIB (Email Alerts)</li>
+                        <li>• Requests (NVD API)</li>
+                    </ul>
+                </div>
+                <div class="space-y-3">
+                    <p class="text-[10px] font-bold text-red-500 uppercase tracking-widest">Authentication</p>
+                    <ul class="text-[11px] font-mono text-gray-400 space-y-2">
+                        <li>• Flask-Session (Logins)</li>
+                        <li>• Werkzeug (Encryption)</li>
+                    </ul>
+                </div>
+                <div class="space-y-3">
+                    <p class="text-[10px] font-bold text-purple-500 uppercase tracking-widest">Core Engine</p>
+                    <ul class="text-[11px] font-mono text-gray-400 space-y-2">
+                        <li>• Threading (Concurrency)</li>
+                        <li>• Subprocess (CLI Hook)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-10 border-t border-white/5 text-center">
+        <p class="text-[10px] font-black text-gray-600 uppercase tracking-widest">Enterprise Security Audit Kernel v2.0.1</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.onmousemove = e => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--x', `${e.clientX - rect.left}px`);
+                card.style.setProperty('--y', `${e.clientY - rect.top}px`);
+            };
+        });
+    </script>
+</body>
+</html>

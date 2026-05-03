@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audit History | Sergent</title>
+    <title>Audit History | security</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; }
@@ -14,6 +14,16 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Subtle row animation */
+        tr { transition: background 0.2s ease; }
+        tr:hover { background: rgba(255, 255, 255, 0.03); }
+        
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .bg-safe { background-color: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+        .bg-warning { background-color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+        .bg-danger { background-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
     </style>
 </head>
 <body class="bg-[#050505]">
@@ -22,58 +32,105 @@
         <div class="flex items-center gap-2">
             <a href="/" class="flex items-center gap-2">
                 <i data-lucide="shield-check" class="text-blue-500 w-6 h-6"></i>
-                <span class="text-lg font-bold tracking-tighter uppercase">Sergent</span>
+                <span class="text-lg font-bold tracking-tighter uppercase font-mono">Sergent<span class="text-blue-500">.</span></span>
             </a>
         </div>
         <div class="flex gap-6 items-center">
-            <a href="/scan" class="text-sm text-gray-400 hover:text-white transition">New Scan</a>
-            <a href="/vulnerabilities" class="text-sm text-gray-400 hover:text-white transition">Dashboard</a>
+            <a href="/tools" class="text-sm text-blue-400 hover:text-blue-300 transition flex items-center gap-2 font-bold">
+                <i data-lucide="wrench" class="w-4 h-4"></i> Tools
+            </a>
+            <a href="/scan" class="text-sm text-gray-400 hover:text-white transition flex items-center gap-2">
+                <i data-lucide="radar" class="w-4 h-4"></i> New Scan
+            </a>
+            <a href="/vulnerabilities" class="text-sm text-gray-400 hover:text-white transition">Vulnerabilities</a>
         </div>
     </nav>
 
     <main class="max-w-6xl mx-auto px-8 py-12">
-        <header class="mb-12">
-            <h1 class="text-4xl font-bold tracking-tight mb-2">Audit History</h1>
-            <p class="text-gray-500 font-mono text-sm uppercase tracking-widest">Archived Network Intelligence</p>
+        <header class="mb-12 flex justify-between items-end">
+            <div>
+                <h1 class="text-4xl font-bold tracking-tight mb-2">Audit History</h1>
+                <p class="text-gray-500 font-mono text-sm uppercase tracking-widest">Archived Network Intelligence</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Total Logs</p>
+                <p class="text-2xl font-black text-white">{{ history|length }}</p>
+            </div>
         </header>
 
-        <div class="glass-card rounded-3xl overflow-hidden">
+        
+
+        <div class="glass-card rounded-3xl overflow-hidden shadow-2xl">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-white/5 border-b border-white/5">
-                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Timestamp</th>
-                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Network (SSID)</th>
-                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Score</th>
-                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Risk Level</th>
-                        <th class="px-8 py-5 text-xs font-bold uppercase text-gray-400 tracking-widest">Issues Found</th>
+                    <tr class="bg-white/[0.03] border-b border-white/5">
+                        <th class="px-8 py-6 text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Timestamp</th>
+                        <th class="px-8 py-6 text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">SSID / Access Point</th>
+                        <th class="px-8 py-6 text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Security Score</th>
+                        <th class="px-8 py-6 text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Integrity Status</th>
+                        <th class="px-8 py-6 text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Threats</th>
                     </tr>
                 </thead>
-                <tbody class="text-sm">
+                <tbody class="text-sm divide-y divide-white/5">
                     {% if history %}
                         {% for scan in history %}
-                        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
-                            <td class="px-8 py-6 text-gray-400 font-mono">{{ scan[1] }}</td>
-                            <td class="px-8 py-6 font-bold text-white">{{ scan[4] }}</td>
+                        <tr>
+                            <td class="px-8 py-6 text-gray-400 font-mono text-xs">{{ scan[1] }}</td>
+                            
                             <td class="px-8 py-6">
-                                <span class="font-black {% if scan[2] > 80 %} text-emerald-500 {% elif scan[2] > 50 %} text-amber-500 {% else %} text-red-500 {% endif %}">
-                                    {{ scan[2] }}%
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="wifi" class="w-3 h-3 text-blue-500"></i>
+                                    <span class="font-bold text-white">{{ scan[4] }}</span>
+                                </div>
+                            </td>
+                            
+                            <td class="px-8 py-6">
+                                <div class="flex items-center gap-3">
+                                    <span class="font-black text-lg {% if scan[2] >= 80 %} text-emerald-500 {% elif scan[2] >= 50 %} text-amber-500 {% else %} text-red-500 {% endif %}">
+                                        {{ scan[2] }}%
+                                    </span>
+                                    <div class="w-16 bg-white/5 h-1 rounded-full overflow-hidden hidden sm:block">
+                                        <div class="h-full {% if scan[2] >= 80 %} bg-emerald-500 {% elif scan[2] >= 50 %} bg-amber-500 {% else %} bg-red-500 {% endif %}" style="width: {{ scan[2] }}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td class="px-8 py-6">
+                                <span class="flex items-center text-[10px] font-bold uppercase tracking-widest">
+                                    <span class="status-dot {% if scan[3]|lower == 'low' or scan[3]|lower == 'secure' %} bg-safe {% elif scan[3]|lower == 'medium' %} bg-warning {% else %} bg-danger {% endif %}"></span>
+                                    {{ scan[3] }}
                                 </span>
                             </td>
-                            <td class="px-8 py-6 uppercase text-[10px] font-bold tracking-widest">{{ scan[3] }}</td>
-                            <td class="px-8 py-6 text-gray-500">{{ scan[5] }} Vulnerabilities</td>
+                            
+                            <td class="px-8 py-6">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="shield-alert" class="w-4 h-4 {% if scan[5] > 0 %} text-red-500 {% else %} text-gray-600 {% endif %}"></i>
+                                    <span class="{% if scan[5] > 0 %} text-white font-bold {% else %} text-gray-600 {% endif %}">
+                                        {{ scan[5] }} <span class="text-[10px] uppercase font-bold text-gray-500 ml-1">Detected</span>
+                                    </span>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="5" class="px-8 py-20 text-center text-gray-500 italic">
-                                <i data-lucide="database" class="w-12 h-12 mx-auto mb-4 opacity-10"></i>
-                                No scan history found. Start your first scan to populate this list.
+                            <td colspan="5" class="px-8 py-24 text-center">
+                                <div class="flex flex-col items-center opacity-20">
+                                    <i data-lucide="database-zap" class="w-16 h-16 mb-4"></i>
+                                    <p class="text-xl font-bold uppercase tracking-widest">Vault Empty</p>
+                                    <p class="text-sm lowercase mt-2 font-mono">No historical audit data available in current workspace.</p>
+                                </div>
                             </td>
                         </tr>
                     {% endif %}
                 </tbody>
             </table>
         </div>
+        
+        <footer class="mt-12 flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase tracking-[0.2em]">
+            <p>Database: SQLite Local (Encrypted)</p>
+            <p>Vizag, India • Sergent Project Laboratory</p>
+        </footer>
     </main>
 
     <script>

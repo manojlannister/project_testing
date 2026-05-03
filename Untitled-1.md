@@ -1,0 +1,37 @@
+```
+└── 📁backend
+    └── 📁__pycache__
+        ├── __init__.cpython-313.pyc
+        ├── arp_spoof.cpython-313.pyc
+        ├── cve_lookup.cpython-313.pyc
+        ├── database.cpython-313.pyc
+        ├── devices.cpython-313.pyc
+        ├── ids_engine.cpython-313.pyc
+        ├── ids_rules.cpython-313.pyc
+        ├── packet_analyzer.cpython-313.pyc
+        ├── performance.cpython-313.pyc
+        ├── recommendations.cpython-313.pyc
+        ├── remediation.cpython-313.pyc
+        ├── scan_ports.cpython-313.pyc
+        ├── scan_wifi.cpython-313.pyc
+        ├── score.cpython-313.pyc
+        ├── tester_controller.cpython-313.pyc
+        ├── vuln_detector.cpython-313.pyc
+    └── 📁reports
+        ├── automated_audit.txt
+    ├── __init__.py
+    ├── arp_spoof.py
+    ├── cve_lookup.py
+    ├── database.py
+    ├── devices.py
+    ├── ids_engine.py
+    ├── ids_rules.py
+    ├── packet_analyzer.py
+    ├── performance.py
+    ├── recommendations.py
+    ├── remediation.py
+    ├── scan_ports.py
+    ├── scan_wifi.py
+    ├── score.py
+    └── vuln_detector.py
+```

@@ -3,217 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Audit Report | Sergent</title>
+    <title>Security Audit Report | Scanner</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background-color: #000000; 
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
         }
-        .score-circle {
+        .report-card {
+            background: #111111;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .score-ring {
             background: conic-gradient(
-                {% if score < 50 %} #ef4444 {% elif score < 85 %} #f59e0b {% else %} #10b981 {% endif %} 
+                {% if score < 50 %} #ff3b30 {% elif score < 85 %} #ff9500 {% else %} #34c759 {% endif %} 
                 0% {{ score }}%, 
-                #1e293b {{ score }}% 100%
+                #222 {{ score }}% 100%
             );
             border-radius: 50%;
         }
+
+        .pulse-red {
+            animation: alert-pulse 1.5s infinite;
+            box-shadow: 0 0 30px rgba(255, 59, 48, 0.6), inset 0 0 20px rgba(255, 59, 48, 0.4);
+        }
+        @keyframes alert-pulse {
+            0% { transform: scale(1) rotate(-90deg); filter: brightness(1); }
+            50% { transform: scale(1.04) rotate(-90deg); filter: brightness(1.5); }
+            100% { transform: scale(1) rotate(-90deg); filter: brightness(1); }
+        }
+
+        .score-text-red {
+            color: #ff3b30;
+            text-shadow: 0 0 20px rgba(255, 59, 48, 0.8), 0 0 40px rgba(255, 59, 48, 0.4);
+        }
+
+        .clean-alert {
+            color: #ff3b30;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+
         @media print {
-            .no-print { display: none; }
-            body { background: white !important; color: black !important; }
-            .glass-card { border: 1px solid #ddd; background: white; color: black; }
-            .text-gray-400, .text-gray-500, .text-blue-500, .text-emerald-400, .text-purple-500, .text-amber-500 { color: #222 !important; }
-            .bg-blue-500\/5, .bg-emerald-500\/5 { background: #f9f9f9 !important; border: 1px solid #eee !important; }
+            .no-print { display: none !important; }
+            body { background: white !important; color: #000000 !important; }
+            .report-card { 
+                background: white !important; 
+                border: 1px solid #ddd !important; 
+                color: #000000 !important;
+                break-inside: avoid;
+            }
+            .text-white, .text-gray-400, .text-gray-500, .text-blue-500 { color: #000000 !important; }
+            .score-ring { -webkit-print-color-adjust: exact; print-color-adjust: exact; animation: none !important; box-shadow: none !important; }
         }
     </style>
 </head>
-<body class="bg-[#050505]">
+<body class="bg-black">
 
-    <nav class="no-print flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
-        <div class="flex items-center gap-2">
+    <nav class="no-print flex justify-between items-center px-8 md:px-12 py-6 border-b border-white/10 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
+        <div class="flex items-center gap-3">
             <i data-lucide="shield-check" class="text-blue-500 w-6 h-6"></i>
-            <span class="text-lg font-bold tracking-tighter uppercase">Sergent</span>
+            <span class="text-lg font-black uppercase tracking-tight">Scanner Report</span>
         </div>
-        <button onclick="window.print()" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-xs font-bold transition text-white">
-            <i data-lucide="printer" class="w-4 h-4"></i> Export PDF
+        <button onclick="window.print()" class="bg-white text-black px-6 py-2 rounded-full text-[10px] font-bold uppercase hover:bg-blue-500 hover:text-white transition shadow-lg">
+            Export PDF
         </button>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-8 py-16">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-8">
-            <div>
-                <h1 class="text-5xl font-bold tracking-tighter mb-4">Security Audit<br>Report</h1>
-                <p class="text-gray-500 font-mono text-sm uppercase tracking-widest">SESSION ID: SRGT-{{ range(1000, 9999) | random }}</p>
+    <main class="max-w-[1400px] mx-auto px-6 md:px-10 py-10">
+        
+        <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-10">
+            <div class="flex-1">
+                <p class="text-blue-500 font-bold text-[10px] tracking-[0.3em] uppercase mb-2">Internal Security Audit</p>
+                <h1 class="text-4xl md:text-5xl font-black tracking-tighter mb-4 leading-tight">Network Health Analysis</h1>
+                <div class="flex flex-wrap gap-3 font-mono text-[9px] text-gray-500 uppercase">
+                    <span class="bg-white/5 px-2 py-1 rounded border border-white/10">ID: SRGT-{{ range(1000, 9999) | random }}</span>
+                    <span class="bg-white/5 px-2 py-1 rounded border border-white/10">RISK: {{ risk_level }}</span>
+                    <span class="bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20" id="session-time">TIMESTAMP: LOADING...</span>
+                </div>
             </div>
             
-            <div class="relative w-48 h-48 flex items-center justify-center">
-                <div class="score-circle w-full h-full absolute transform -rotate-90"></div>
-                <div class="w-40 h-40 bg-[#050505] rounded-full absolute flex flex-col items-center justify-center">
-                    <span class="text-4xl font-black text-white">{{ score }}</span>
-                    <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Health Score</span>
+            <div class="relative w-56 h-56 flex items-center justify-center">
+                <div class="score-ring w-full h-full absolute transform -rotate-90 {% if score < 50 %} pulse-red {% endif %}"></div>
+                <div class="w-44 h-44 bg-black rounded-full absolute flex flex-col items-center justify-center border border-white/10 shadow-2xl">
+                    <span class="text-7xl font-black {% if score < 50 %} score-text-red {% else %} text-white {% endif %}">{{ score }}</span>
+                    <span class="text-[9px] text-gray-500 uppercase font-black tracking-widest mt-1">Health %</span>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div class="glass-card p-6 rounded-3xl">
-                <h3 class="text-blue-500 font-bold text-xs uppercase mb-2 tracking-widest">Network State</h3>
-                <p class="text-xl font-bold text-white">{{ risk_level }}</p>
-            </div>
-            <div class="glass-card p-6 rounded-3xl">
-                <h3 class="text-emerald-500 font-bold text-xs uppercase mb-2 tracking-widest">WiFi Protocol</h3>
-                <p class="text-xl font-bold text-white">{{ wifi[0].security_raw if wifi else 'WPA2' }}</p>
-            </div>
-            <div class="glass-card p-6 rounded-3xl">
-                <h3 class="text-amber-500 font-bold text-xs uppercase mb-2 tracking-widest">Vulnerabilities</h3>
-                <p class="text-2xl font-bold text-white">{{ open_ports|length }}</p>
-            </div>
-            <div class="glass-card p-6 rounded-3xl">
-                <h3 class="text-emerald-500 font-bold text-xs uppercase mb-2 tracking-widest">Devices</h3>
-                <p class="text-2xl font-bold text-white">{{ devices|length }}</p>
-            </div>
-        </div>
-
-        <section class="mb-16">
-            <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
-                <i data-lucide="layout-grid" class="text-blue-500"></i>
-                Usage Compatibility Matrix
+        <section class="mb-14">
+            <h2 class="text-xl font-black mb-6 uppercase flex items-center gap-2">
+                <i data-lucide="shield-alert" class="text-red-500 w-5 h-5"></i> 1. Vulnerability Matrix
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="glass-card p-6 rounded-3xl border-l-4 border-emerald-500">
-                    <span class="text-gray-500 font-bold text-[10px] uppercase tracking-widest block mb-4">Banking</span>
-                    <p class="text-2xl font-black text-white">{{ usage.payments }}% Safety</p>
-                    <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
-                        <div class="bg-emerald-500 h-full" style="width: {{ usage.payments }}%"></div>
-                    </div>
-                    <p class="text-[9px] text-gray-500 mt-2 italic">Based on encryption and MITM risk.</p>
-                </div>
-
-                <div class="glass-card p-6 rounded-3xl border-l-4 border-amber-500">
-                    <span class="text-gray-500 font-bold text-[10px] uppercase tracking-widest block mb-4">File Sharing</span>
-                    <p class="text-2xl font-black text-white">{{ usage.files }}% Secure</p>
-                    <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
-                        <div class="bg-amber-500 h-full" style="width: {{ usage.files }}%"></div>
-                    </div>
-                    <p class="text-[9px] text-gray-500 mt-2 italic">Based on protocol security and ports.</p>
-                </div>
-
-                <div class="glass-card p-6 rounded-3xl border-l-4 border-purple-500">
-                    <span class="text-gray-500 font-bold text-[10px] uppercase tracking-widest block mb-4">Streaming</span>
-                    <p class="text-2xl font-black text-white">{{ usage.movies }}% Stability</p>
-                    <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
-                        <div class="bg-purple-500 h-full" style="width: {{ usage.movies }}%"></div>
-                    </div>
-                    <p class="text-[9px] text-gray-500 mt-2 italic">Based on jitter and buffering risk.</p>
-                </div>
-
-                <div class="glass-card p-6 rounded-3xl border-l-4 border-blue-500">
-                    <span class="text-gray-500 font-bold text-[10px] uppercase tracking-widest block mb-4">Gaming</span>
-                    <p class="text-2xl font-black text-white">{{ usage.gaming }}% Performance</p>
-                    <div class="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
-                        <div class="bg-blue-500 h-full" style="width: {{ usage.gaming }}%"></div>
-                    </div>
-                    <p class="text-[9px] text-gray-500 mt-2 italic">Based on live ping and latency.</p>
-                </div>
+            <div class="report-card overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-white/5 border-b border-white/10">
+                        <tr>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-gray-500">Signature</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-gray-500 w-32">Severity</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-gray-500 w-40">Target Node</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% if vulnerabilities %}
+                            {% for v in vulnerabilities %}
+                            <tr>
+                                <td class="px-6 py-6 text-white">
+                                    <div class="font-bold text-base uppercase mb-1">{{ v.title }}</div>
+                                    <div class="text-gray-400 text-xs italic leading-relaxed">{{ v.description }}</div>
+                                </td>
+                                <td class="px-6 py-6">
+                                    <span class="font-black uppercase text-[10px] {% if v.severity|lower == 'critical' %} text-red-500 {% else %} text-orange-500 {% endif %}">
+                                        {{ v.severity }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-6 font-mono text-blue-400 font-bold text-base">
+                                    {{ v.port }}/{{ v.protocol }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="3" class="p-16 text-center text-gray-500 text-xs italic">No threats found in this session.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <section class="mb-16">
-            <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
-                <i data-lucide="activity" class="text-blue-500"></i>
-                Traffic Analysis Summary
+        <section class="mb-14">
+            <h2 class="text-xl font-black mb-6 uppercase flex items-center gap-2">
+                <i data-lucide="list-checks" class="text-blue-500 w-5 h-5"></i> 2. Remediation Roadmap
             </h2>
-            <div class="glass-card p-8 rounded-3xl">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    {% if packets %}
-                        {% for p in packets %}
-                        <div>
-                            <span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest block mb-2">{{ p.protocol }}</span>
-                            <div class="flex items-end gap-2">
-                                <span class="text-2xl font-bold text-white">{{ p.percentage }}%</span>
-                                <span class="text-[10px] text-gray-500 mb-1">load</span>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-gray-500 italic">No traffic metadata captured in this audit.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-16">
-            <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
-                <i data-lucide="list-checks" class="text-blue-500"></i>
-                Remediation Roadmap
-            </h2>
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-4">
                 {% if recommendations %}
                     {% for rec in recommendations %}
-                    <div class="glass-card p-6 rounded-2xl flex gap-6 items-start border-l-4 
-                        {% if rec.severity == 'Critical' or rec.severity == 'High' %} border-l-red-500 
-                        {% elif rec.severity == 'Medium' %} border-l-amber-500 
-                        {% else %} border-l-blue-500 {% endif %}">
-                        <div class="bg-white/5 p-3 rounded-xl">
-                            <i data-lucide="alert-circle" class="text-blue-400 w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-bold mb-1 text-white">{{ rec.title if rec.title else rec }}</h4>
-                            <p class="text-gray-400 text-sm">{{ rec.desc if rec.desc else "Action prioritized based on live session heuristics." }}</p>
+                    <div class="report-card p-6 border-l-4 border-blue-600 flex flex-row items-start gap-6">
+                        <div class="text-2xl font-black text-blue-500 opacity-20 flex-shrink-0">0{{ loop.index }}</div>
+                        <div class="flex-1">
+                            <h4 class="text-base font-black text-white uppercase mb-2">{{ rec.title if rec is mapping else rec }}</h4>
+                            <div class="text-gray-400 text-xs space-y-1 leading-relaxed">
+                                <p><strong>Step 1:</strong> Identify process ownership via <code>netstat -ano</code>.</p>
+                                <p><strong>Step 2:</strong> Apply Layer-4 traffic filtering rules.</p>
+                                <p><strong>Step 3:</strong> Secondary scan to verify port hardening.</p>
+                            </div>
                         </div>
                     </div>
                     {% endfor %}
                 {% else %}
-                    <div class="glass-card p-8 rounded-2xl text-center text-gray-500 italic">
-                        The scan did not trigger any high-risk remediation flags.
-                    </div>
+                    <div class="report-card p-10 text-center text-gray-500 text-xs italic uppercase tracking-widest">System meets all hardening standards.</div>
                 {% endif %}
             </div>
         </section>
 
-        <section class="mb-16">
-            <h2 class="text-2xl font-bold mb-8 flex items-center gap-3 text-emerald-400">
-                <i data-lucide="shield-check"></i>
-                Expert WiFi Safety Guide
+        <section class="mb-14">
+            <h2 class="text-xl font-black mb-6 uppercase flex items-center gap-2">
+                <i data-lucide="info" class="text-emerald-500 w-5 h-5"></i> 3. Security Guidelines
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="glass-card p-8 rounded-3xl border-blue-500/20 bg-blue-500/5">
-                    <h4 class="text-blue-400 font-bold text-sm uppercase mb-6 flex items-center gap-2">
-                        <i data-lucide="wifi"></i> Public WiFi Safety
-                    </h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li class="flex gap-3"><i data-lucide="shield" class="w-4 h-4 text-blue-500 mt-0.5"></i> Use a VPN to encrypt your device-to-server tunnel.</li>
-                        <li class="flex gap-3"><i data-lucide="shield" class="w-4 h-4 text-blue-500 mt-0.5"></i> Only enter data on "HTTPS" websites with padlock icons.</li>
-                        <li class="flex gap-3"><i data-lucide="shield" class="w-4 h-4 text-blue-500 mt-0.5"></i> Disable "Auto-Connect" to prevent joining rogue hotspots.</li>
-                        <li class="flex gap-3"><i data-lucide="shield" class="w-4 h-4 text-blue-500 mt-0.5"></i> Activate OS firewalls before connecting to shared APs.</li>
-                    </ul>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+                <div class="report-card p-6 border-t-4 border-blue-500 bg-blue-500/5">
+                    <h3 class="text-blue-500 font-black text-sm uppercase mb-6 flex items-center gap-2"><i data-lucide="wifi" class="w-4 h-4"></i> Public Safety</h3>
+                    <div class="flex flex-col gap-4 flex-grow text-xs">
+                        <div class="bg-black/40 p-4 rounded-xl flex-grow">
+                            <p class="text-white font-bold mb-1">VPN Mandatory</p>
+                            <p class="text-gray-400">Encrypt traffic via WireGuard. Switch VPN 'ON' before accessing data.</p>
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-xl flex-grow">
+                            <p class="text-white font-bold mb-1">SSL Enforcement</p>
+                            <p class="text-gray-400">Force HTTPS. Block unencrypted (HTTP) sites in browser settings.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-card p-8 rounded-3xl border-emerald-500/20 bg-emerald-500/5">
-                    <h4 class="text-emerald-400 font-bold text-sm uppercase mb-6 flex items-center gap-2">
-                        <i data-lucide="home"></i> Home Hardening
-                    </h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li class="flex gap-3"><i data-lucide="lock" class="w-4 h-4 text-emerald-500 mt-0.5"></i> Rotate Default Credentials: Change factory admin logins.</li>
-                        <li class="flex gap-3"><i data-lucide="lock" class="w-4 h-4 text-emerald-500 mt-0.5"></i> Disable WPS/UPnP to close legacy exploit entry points.</li>
-                        <li class="flex gap-3"><i data-lucide="lock" class="w-4 h-4 text-emerald-500 mt-0.5"></i> Firmware Management: Regularly update router software.</li>
-                        <li class="flex gap-3"><i data-lucide="lock" class="w-4 h-4 text-emerald-500 mt-0.5"></i> Isolate IoT devices on a separate Guest VLAN/Network.</li>
-                    </ul>
+                <div class="report-card p-6 border-t-4 border-emerald-500 bg-emerald-500/5">
+                    <h3 class="text-emerald-500 font-black text-sm uppercase mb-6 flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i> Home Hardening</h3>
+                    <div class="flex flex-col gap-4 flex-grow text-xs">
+                        <div class="bg-black/40 p-4 rounded-xl flex-grow">
+                            <p class="text-white font-bold mb-1">Credential Rotation</p>
+                            <p class="text-gray-400">Change router admin password to a strong random 16+ string immediately.</p>
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-xl flex-grow">
+                            <p class="text-white font-bold mb-1">Disable Legacy</p>
+                            <p class="text-gray-400">Disable 'WPS' and 'UPnP' services within gateway settings to prevent easy entry.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <footer class="text-center pt-16 border-t border-white/5">
-            <p class="text-gray-600 text-sm italic">"Security is not a product, but a process." — Bruce Schneier</p>
-            <div class="mt-8 opacity-20 flex justify-center grayscale">
-                <i data-lucide="shield-check" class="w-12 h-12"></i>
+        <section class="mb-14">
+            <h2 class="text-xl font-black mb-6 uppercase flex items-center gap-2">
+                <i data-lucide="file-text" class="text-gray-400 w-5 h-5"></i> 4. Audit Conclusion
+            </h2>
+            <div class="report-card p-8 border-l-4 {% if score < 50 %} border-red-500 bg-red-500/10 {% elif score < 85 %} border-orange-500 bg-orange-500/5 {% else %} border-emerald-500 bg-emerald-500/5 {% endif %}">
+                <p class="text-gray-300 text-sm leading-relaxed">
+                    {% if score < 50 %}
+                        <span class="clean-alert">CRITICAL THREAT DETECTED:</span> Your network environment is currently <strong>UNSAFE</strong>.
+                        <br><br>
+                        <strong>Logical Actions:</strong> Disconnect unknown devices. Apply firewall rules in Section 2. Reset all credentials immediately.
+                    {% else %}
+                        <strong>SECURE:</strong> Your network environment is <strong>HEALTHY</strong>. No active threats found during DPI phase.
+                    {% endif %}
+                </p>
             </div>
+        </section>
+
+        <section class="mb-14">
+            <h2 class="text-xl font-black mb-6 uppercase flex items-center gap-2">
+                <i data-lucide="activity" class="text-purple-500 w-5 h-5"></i> 5. Usage Safety Matrix
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="report-card p-6 text-center border-b-2 border-purple-500">
+                    <span class="text-gray-500 font-bold text-[9px] uppercase tracking-widest block mb-3">Payments</span>
+                    <span class="text-3xl font-black text-white">{{ usage.payments }}%</span>
+                    <div class="w-full bg-white/10 h-1.5 rounded-full mt-6 overflow-hidden">
+                        <div class="bg-purple-500 h-full" style="width: {{ usage.payments }}%"></div>
+                    </div>
+                </div>
+                <div class="report-card p-6 text-center border-b-2 border-purple-500">
+                    <span class="text-gray-500 font-bold text-[9px] uppercase tracking-widest block mb-3">Files</span>
+                    <span class="text-3xl font-black text-white">{{ usage.files }}%</span>
+                    <div class="w-full bg-white/10 h-1.5 rounded-full mt-6 overflow-hidden">
+                        <div class="bg-purple-500 h-full" style="width: {{ usage.files }}%"></div>
+                    </div>
+                </div>
+                <div class="report-card p-6 text-center border-b-2 border-purple-500">
+                    <span class="text-gray-500 font-bold text-[9px] uppercase tracking-widest block mb-3">Movies</span>
+                    <span class="text-3xl font-black text-white">{{ usage.movies }}%</span>
+                    <div class="w-full bg-white/10 h-1.5 rounded-full mt-6 overflow-hidden">
+                        <div class="bg-purple-500 h-full" style="width: {{ usage.movies }}%"></div>
+                    </div>
+                </div>
+                <div class="report-card p-6 text-center border-b-2 border-purple-500">
+                    <span class="text-gray-500 font-bold text-[9px] uppercase tracking-widest block mb-3">Gaming</span>
+                    <span class="text-3xl font-black text-white">{{ usage.gaming }}%</span>
+                    <div class="w-full bg-white/10 h-1.5 rounded-full mt-6 overflow-hidden">
+                        <div class="bg-purple-500 h-full" style="width: {{ usage.gaming }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="pt-8 border-t border-white/10 text-center opacity-40">
+            <p class="text-[9px] font-mono tracking-[0.3em] uppercase text-gray-500">Scanner Security Lab • CSE Project 2026</p>
         </footer>
+
     </main>
 
     <script>
+        const now = new Date();
+        document.getElementById('session-time').innerText = `TIMESTAMP: ${now.toLocaleString()}`;
         lucide.createIcons();
     </script>
 </body>

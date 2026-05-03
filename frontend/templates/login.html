@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Sergent.CORE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #000000; color: #ffffff; }
+        .hero-gradient { background: radial-gradient(circle at 50% 50%, #111827 0%, #000000 100%); min-height: 100vh; }
+        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    </style>
+</head>
+<body class="hero-gradient flex items-center justify-center p-6">
+
+    <div class="glass-card p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl">
+        <div class="text-center mb-10">
+            <div class="inline-flex p-4 bg-blue-500/10 rounded-2xl mb-6">
+                <i data-lucide="shield-lock" class="text-blue-500 w-8 h-8"></i>
+            </div>
+            <h1 class="text-3xl font-black tracking-tight uppercase">Admin Login</h1>
+            <p class="text-gray-500 text-sm mt-2 font-medium">Verify credentials to access the console.</p>
+            
+            {% if error %}
+            <div class="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <p class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ error }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <form action="/login" method="POST" class="space-y-6" autocomplete="off">
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2 ml-1">Username</label>
+                <input type="text" name="username" required 
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:border-blue-500 outline-none transition font-medium text-white">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2 ml-1">Password</label>
+                <input type="password" name="password" required 
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:border-blue-500 outline-none transition font-medium text-white">
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition shadow-2xl shadow-blue-600/20 active:scale-[0.98]">
+                AUTHENTICATE
+            </button>
+        </form>
+
+        <div class="mt-10 pt-8 border-t border-white/5 text-center flex flex-col gap-4">
+            <a href="/register" class="text-[10px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-400 transition">
+                New Operator? Create Account
+            </a>
+            <a href="/" class="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition">
+                Return to Home
+            </a>
+        </div>
+    </div>
+
+    <script> lucide.createIcons(); </script>
+</body>
+</html>

@@ -8,10 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; overflow: hidden; }
         .mono { font-family: 'Fira Code', monospace; }
         
-        /* Scanning Animation */
+        /* --- MATRIX BACKGROUND (Updated Size & Opacity) --- */
+        #data-stream {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            opacity: 0.2; /* Slightly reduced opacity as requested */
+            pointer-events: none;
+        }
+
+        /* --- RADAR ANIMATIONS --- */
         .radar-ring {
             position: absolute;
             border: 1px solid rgba(59, 130, 246, 0.3);
@@ -39,30 +51,38 @@
         }
 
         .console-box {
-            background: rgba(10, 10, 10, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: rgba(10, 10, 10, 0.85); 
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+
+        main {
+            position: relative;
+            z-index: 10;
         }
     </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body class="bg-black">
 
-    <nav class="flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+    <canvas id="data-stream"></canvas>
+
+    <nav class="relative z-50 flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0">
         <div class="flex items-center gap-2">
             <a href="/" class="flex items-center gap-2">
                 <i data-lucide="shield-check" class="text-blue-500 w-6 h-6"></i>
-                <span class="text-lg font-bold tracking-tighter">Scanner</span>
+                <span class="text-lg font-bold tracking-tighter uppercase">Scanner</span>
             </a>
         </div>
         <div class="text-xs font-medium text-gray-500 uppercase tracking-widest">
-            Module: <span class="text-blue-500">Network_Analyzer_v1.0</span>
+            Module: <span class="text-blue-500 font-mono">CORE_DPI_ENGINE_v1.0</span>
         </div>
     </nav>
 
     <main class="max-w-6xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         
-        <div class="relative flex items-center justify-center h-[400px]">
+        <div id="radar-container" class="relative flex items-center justify-center h-[400px]">
             <div class="radar-ring w-64 h-64"></div>
             <div class="radar-ring w-64 h-64" style="animation-delay: 1s;"></div>
             <div class="radar-ring w-64 h-64" style="animation-delay: 2s;"></div>
@@ -83,7 +103,7 @@
             
             <div class="console-box rounded-2xl overflow-hidden mb-6">
                 <div class="bg-white/5 px-4 py-2 border-b border-white/5 flex items-center justify-between">
-                    <span class="text-[10px] font-bold text-gray-500 uppercase">Live Output</span>
+                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Live Terminal Output</span>
                     <div class="flex gap-1.5">
                         <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
                         <div class="w-2 h-2 rounded-full bg-yellow-500/50"></div>
@@ -93,16 +113,16 @@
                 <div id="console-stream" class="p-6 h-64 overflow-y-auto mono text-sm text-blue-300/80 leading-relaxed">
                     <div class="mb-1 text-gray-500">[SYSTEM] Initializing backend drivers...</div>
                     <div class="mb-1 text-gray-500">[SYSTEM] Hooking scan_wifi.py...</div>
-                    <div class="mb-1 text-green-400">[READY] Interface wlan0 active.</div>
+                    <div class="mb-1 text-green-400 font-bold">[READY] Interface wlan0 active.</div>
                 </div>
             </div>
 
             <div class="flex gap-4">
-                <button onclick="startScan()" id="scanBtn" class="flex-1 bg-white text-black py-4 rounded-xl font-bold hover:bg-blue-500 hover:text-white transition-all flex items-center justify-center gap-2">
+                <button onclick="startScan()" id="scanBtn" class="flex-1 bg-white text-black py-4 rounded-xl font-bold hover:bg-blue-500 hover:text-white transition-all flex items-center justify-center gap-2 uppercase text-sm tracking-widest">
                     <i data-lucide="play" class="w-5 h-5"></i> Execute Analysis
                 </button>
                 <button onclick="window.location.href='/vulnerabilities'" class="px-6 py-4 border border-white/10 rounded-xl hover:bg-white/5 transition">
-                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    <i data-lucide="arrow-right" class="w-5 h-5 text-gray-400"></i>
                 </button>
             </div>
         </div>
@@ -111,23 +131,69 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
     <script>
+        // --- DATA STREAM (UPDATED: SMALLER SIZE & EXCLUSION LOGIC) ---
+        const canvas = document.getElementById('data-stream');
+        const ctx = canvas.getContext('2d');
+        const radar = document.getElementById('radar-container');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const fontSize = 10; // Smaller size as requested
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = new Array(columns).fill(1);
+        const chars = "01010101ABCDEF";
+
+        function draw() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#00f2ff"; 
+            ctx.font = "bold " + fontSize + "px monospace";
+
+            // Get Radar position for exclusion zone
+            const rect = radar.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const exclusionRadius = 180; // Zone where numbers won't draw
+
+            for (let i = 0; i < drops.length; i++) {
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+
+                // Calculate distance from radar center
+                const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+
+                // Only draw if outside the radar circle
+                if (dist > exclusionRadius) {
+                    ctx.shadowBlur = 4;
+                    ctx.shadowColor = "#00f2ff";
+                    ctx.fillText(text, x, y);
+                    ctx.shadowBlur = 0;
+                }
+
+                if (y > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 50);
+
         function startScan() {
-            // Provide immediate visual feedback
             const btn = document.getElementById('scanBtn');
             btn.disabled = true;
             btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Initializing...';
-            
-            // Re-initialize icons for the new button state
             if(window.lucide) lucide.createIcons();
-
-            // Clear the console for a fresh look
             const consoleBox = document.getElementById('console-stream');
             if(consoleBox) consoleBox.innerHTML = '<div class="text-gray-500">[SYSTEM] Establishing secure link to backend...</div>';
-            
-            // Execute the high-level logic from your JS file
             Scanner.runScan();
         }
     </script>
-    
 </body>
 </html>

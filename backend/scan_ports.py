@@ -2,9 +2,10 @@ import nmap
 import socket
 import subprocess
 import re
+import os # Added for path checking
+import sys # Added for admin check
 
 # Refined Risky Ports with logical impact descriptions
-# NOTE: Port 443 (HTTPS) is intentionally excluded as it is a security standard.
 RISKY_PORTS = {
     21: "FTP - Data and credentials are sent in plaintext. Highly vulnerable to sniffing.",
     23: "Telnet - Remote access via unencrypted channel. Legacy risk.",
@@ -20,21 +21,14 @@ RISKY_PORTS = {
 }
 
 def classify_port_risk(port, service):
-    """
-    Logic-based risk classification for professional auditing.
-    """
-    # 1. Explicit Secure Ports
+    """Logic-based risk classification for professional auditing."""
     if port in [443, 8443, 9443]:
         return "Secure", "Encrypted HTTPS service. Standard security practice."
-    
     if port == 22:
         return "Low Risk", "SSH - Secure remote access. Ensure strong passwords/keys."
-
-    # 2. Known Risky Ports
     if port in RISKY_PORTS:
         return "High Risk", RISKY_PORTS[port]
     
-    # 3. Protocol-based check for laymen
     insecure_keywords = ["http", "ftp", "telnet", "imap", "pop3"]
     if any(k in service.lower() for k in insecure_keywords):
         return "Medium Risk", f"Service '{service}' likely lacks encryption."
@@ -42,41 +36,44 @@ def classify_port_risk(port, service):
     return "Low Risk", "General service active. No immediate vulnerability signature."
 
 def get_default_gateway():
-    """
-    Detects the gateway IP for scanning (Windows/Linux support).
-    """
-    try:
-        output = subprocess.check_output(['route', 'print', '0.0.0.0'], shell=True).decode()
-        match = re.search(r'0\.0\.0\.0\s+0\.0\.0\.0\s+(\d+\.\d+\.\d+\.\d+)', output)
-        if match:
-            return match.group(1)
-    except:
-        pass
-    
+    """Detects the gateway IP without using 'route' command."""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         local_ip = s.getsockname()[0]
         s.close()
-        return local_ip.rsplit('.', 1)[0] + ".1"
+        gateway_ip = local_ip.rsplit('.', 1)[0] + ".1"
+        return gateway_ip
     except Exception:
         return "192.168.1.1"
 
-
-
-def scan_open_ports(target_ip=None, arguments="-sT -T4 --open --top-ports 100"):
+def scan_open_ports(target_ip=None, arguments="-sT -T5 --open --top-ports 20 --host-timeout 10s"):
     """
-    Professional Nmap wrapper. 
-    Accepts custom arguments to support Quick vs Deep scan modes.
+    ULTRA-FAST SCAN MODE using Npcap engine
     """
     results = []
-    scanner = nmap.PortScanner()
+    
+    # --- NPCAP COMPATIBILITY CHECK ---
+    # On Windows, we must ensure Nmap can access the Npcap driver
+    if os.name == 'nt':
+        # Add Nmap to path if not present (Adjust if your Nmap is elsewhere)
+        nmap_paths = [r"C:\Program Files (x86)\Nmap", r"C:\Program Files\Nmap"]
+        for path in nmap_paths:
+            if os.path.exists(path) and path not in os.environ["PATH"]:
+                os.environ["PATH"] += os.pathsep + path
+
+    try:
+        scanner = nmap.PortScanner()
+    except nmap.PortScannerError:
+        print(">> Error: Nmap not found. Ensure Nmap is installed and in System PATH.")
+        return results
 
     if not target_ip:
         target_ip = get_default_gateway()
 
     try:
-        # Defaulting to top 100 ports for a balance of speed and depth
+        # Using -sT (TCP Connect) is fastest and most reliable with Npcap on Windows
+        # 
         scanner.scan(hosts=target_ip, arguments=arguments)
     except Exception as e:
         print(f"Scanner Execution Error: {e}")
@@ -88,15 +85,22 @@ def scan_open_ports(target_ip=None, arguments="-sT -T4 --open --top-ports 100"):
     for proto in scanner[target_ip].all_protocols():
         ports = sorted(scanner[target_ip][proto].keys())
         for port in ports:
-            state = scanner[target_ip][proto][port]['state']
-            service = scanner[target_ip][proto][port].get('name', 'unknown')
-            risk, description = classify_port_risk(port, service)
+            port_data = scanner[target_ip][proto][port]
+            
+            state = port_data['state']
+            service_name = port_data.get('name', 'unknown')
+            product = port_data.get('product', '') 
+            version = port_data.get('version', '') 
+            
+            risk, description = classify_port_risk(port, service_name)
 
             results.append({
                 "target": target_ip,
                 "port": port,
                 "protocol": proto.upper(),
-                "service": service.upper(),
+                "service": service_name.upper(),
+                "product": product,
+                "version": version,
                 "state": state,
                 "risk_level": risk,
                 "description": description
@@ -105,10 +109,23 @@ def scan_open_ports(target_ip=None, arguments="-sT -T4 --open --top-ports 100"):
     return results
 
 if __name__ == "__main__":
+    # Check for Admin Privileges (Required for Npcap raw packet access)
+    def is_admin():
+        try: return os.getuid() == 0
+        except AttributeError: return subprocess.run(['net', 'session'], capture_output=True).returncode == 0
+
+    if not is_admin():
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("WARNING: Not running as Administrator.")
+        print("Npcap requires Admin rights to perform deep scans.")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+
     gw = get_default_gateway()
-    print(f"Sergent Audit Engine: Probing {gw}...")
-    # Simulation of a Deep Scan
-    found_ports = scan_open_ports(gw, arguments="-sT -T4 --open --top-ports 1000")
+    print(f"Sergent Audit Engine: Fast-Probing {gw}...")
+    found_ports = scan_open_ports(gw)
+    
+    if not found_ports:
+        print("No open ports found. This may be due to router firewall or lack of Npcap permissions.")
     
     for p in found_ports:
         print(f"[{p['risk_level']}] Port {p['port']} ({p['service']}): {p['description']}")
